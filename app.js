@@ -266,31 +266,15 @@ app.get('/pesquisaSintoma/:sintoma', async (req, res) => {
 
         if (result.length == 0) {
             processo = 0;
-            res.render('result', { result, processo });
         } else {
             processo = 3;
-            res.render('result', {
+            res.render('resultSintomas', {
                 result: paginatedDoencas,
                 currentPage: page,
-                totalPages: Math.ceil(result.length / perPage),
-                processo: 3
+                totalPages: Math.ceil(result.length / perPage)
             });
             
         }
-
-
-        // res.render('results', { result, processo });
-        // // Paginação
-        // const start = (page - 1) * perPage;
-        // const end = page * perPage;
-        // const paginatedDoencas = doencas.slice(start, end);
-
-        // // Renderiza a página com os dados paginados
-        // res.render('listadoencas', {
-        //     doencas: paginatedDoencas,
-        //     currentPage: page,
-        //     totalPages: Math.ceil(doencas.length / perPage)
-        // });
     } catch (err) {
         // Renderiza a página de erro com a mensagem de erro
         res.status(500).render('erro', { mensagem: "Erro ao listar doencas: " + err.message });
@@ -332,32 +316,6 @@ app.get('/listadoencas', async (req,res) => {
         res.status(500).render('erro', { mensagem: "Erro ao listar doencas:" + err.message });
     }
 });
-
-
-// app.get('/listadoencasPeloSintoma', async (req,res) => {
-//     try {
-//         sintomas = ['Calafrios']
-//         const perPage = 10;  // Número máximo de doenças por página
-//         const page = parseInt(req.query.page) || 1;  // Página atual, padrão 1
-//         // Chama a função assíncrona listar doencas
-//         const doencas = await listarDoencasPeloSintoma(sintomas);
-
-//         // Cálculo para encontrar o índice das doenças na página atual
-//         const start = (page - 1) * perPage;
-//         const end = page * perPage;
-//         const paginatedDoencas = doencas.slice(start, end);
-
-
-//         res.render('listadoencasPeloSintoma', {
-//             doencas: paginatedDoencas,
-//             currentPage: page,
-//             totalPages: Math.ceil(doencas.length / perPage)
-//         });
-//     } catch (err) {
-//         // Renderize a página de erro com a mensagem de erro
-//         res.status(500).render('erro', { mensagem: "Erro ao listar doencas:" + err.message });
-//     }
-// });
 
 app.get('/searchnpop', (req, res) => {
     res.render('searchnpop');
