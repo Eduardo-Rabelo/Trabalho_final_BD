@@ -63,6 +63,57 @@
         </tbody>
     </table>
     <% } %>
+
+    <% if (processo === 3) { %>
+
+
+    <h1>Doença encontrada</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>cid</th>
+                <th>Nome tecnico</th>
+                <th>Pontuacao</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% result.forEach((disease) => { %>
+                <tr>
+                    <td><%= disease.id %></td>
+                    <td><%= disease.nome %></td>
+                    <td><%= disease.pontuacao %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <% if (currentPage > 1) { %>
+            <a href="/result?page=<%= currentPage - 1 %>&processo=<%=processo%>">Anterior</a>
+        <% } %>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="/result?page=<%= i %>&processo=<%=processo%>" 
+            class="<%= i == currentPage ? 'active' : '' %>">
+            <%= i %>
+            </a>
+        <% } %>
+
+        <% if (currentPage < totalPages) { %>
+            <a href="/result?page=<%= currentPage + 1 %>&processo=<%=processo%>">Próxima</a>
+        <% } %>
+    </div>
+
+
+    <% } %>
+
+
+
+
+
+
+
     </div>
 </body>
 </html>

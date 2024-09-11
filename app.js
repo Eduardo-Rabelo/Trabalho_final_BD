@@ -10,7 +10,9 @@ const {
     pesquisanTech,
     pesquisaCid,
     pesquisanPop,
-    pesquisaPatg } = require('./index.js');
+    pesquisaPatg, 
+    listarDoencasPeloSintoma} = require('./index.js');
+const { query } = require('./database/index.js');
 
 const app = express();
 const port = 3000;
@@ -207,6 +209,97 @@ app.post('/pesquisapatg', async (req, res) => {
     }
 });
 
+
+
+
+// app.post('/pesquisaSintoma', async (req, res) => {
+//     const sintoma = req.body.sintoma;
+//     let processo;
+
+//     try {
+//         result = await listarDoencasPeloSintoma(sintoma);
+        
+//         if (result.length == 0) {
+//             processo = 0;
+//             res.render('result', { result, processo });
+//         } else {
+//             processo = 1;
+//             res.render('result', { result, processo });
+//         }
+//     } catch (err) {
+//         // Renderize a página de erro com a mensagem de erro
+//         res.status(500).render('erro', { mensagem: "Erro: " + err.message });
+//     }
+// });
+
+app.get('/pesquisaSintoma/:sintoma', async (req, res) => {
+    try {
+        // Pegue o valor dos sintomas do corpo da requisição ou query string
+        let sintomas = req.params.sintoma
+        console.log("Sintomas: ",sintomas)
+        // Converte sintomas para array se for uma string
+        if (typeof sintomas === 'string') {
+            sintomas = [sintomas]; // Converte uma string para array com um único elemento
+        }
+        
+        // Se sintomas ainda não for um array, inicializa como array vazio
+        sintomas = Array.isArray(sintomas) ? sintomas : [];
+
+        const perPage = 10; // Número máximo de doenças por página
+        const page = parseInt(req.query.page) || 1; // Página atual, padrão 1
+
+        // Chama a função assíncrona listarDoencasPeloSintoma
+        const result = await listarDoencasPeloSintoma(sintomas);
+        console.log("Doencas já passadas: ", result)
+
+
+        let processo;
+
+        
+                    // Cálculo para encontrar o índice das doenças na página atual
+        const start = (page - 1) * perPage;
+        const end = page * perPage;
+        const paginatedDoencas = result.slice(start, end);
+
+
+        
+
+        if (result.length == 0) {
+            processo = 0;
+            res.render('result', { result, processo });
+        } else {
+            processo = 3;
+            res.render('result', {
+                result: paginatedDoencas,
+                currentPage: page,
+                totalPages: Math.ceil(result.length / perPage),
+                processo: 3
+            });
+            
+        }
+
+
+        // res.render('results', { result, processo });
+        // // Paginação
+        // const start = (page - 1) * perPage;
+        // const end = page * perPage;
+        // const paginatedDoencas = doencas.slice(start, end);
+
+        // // Renderiza a página com os dados paginados
+        // res.render('listadoencas', {
+        //     doencas: paginatedDoencas,
+        //     currentPage: page,
+        //     totalPages: Math.ceil(doencas.length / perPage)
+        // });
+    } catch (err) {
+        // Renderiza a página de erro com a mensagem de erro
+        res.status(500).render('erro', { mensagem: "Erro ao listar doencas: " + err.message });
+    }
+});
+
+
+
+
 // Rota para a página de consulta de doenças
 app.get('/consultaindex', (req, res) => {
     res.render('consultaindex');
@@ -222,7 +315,7 @@ app.get('/listadoencas', async (req,res) => {
         const page = parseInt(req.query.page) || 1;  // Página atual, padrão 1
         // Chama a função assíncrona listar doencas
         const doencas = await listarDoencas();
-
+        
         // Cálculo para encontrar o índice das doenças na página atual
         const start = (page - 1) * perPage;
         const end = page * perPage;
@@ -240,6 +333,32 @@ app.get('/listadoencas', async (req,res) => {
     }
 });
 
+
+// app.get('/listadoencasPeloSintoma', async (req,res) => {
+//     try {
+//         sintomas = ['Calafrios']
+//         const perPage = 10;  // Número máximo de doenças por página
+//         const page = parseInt(req.query.page) || 1;  // Página atual, padrão 1
+//         // Chama a função assíncrona listar doencas
+//         const doencas = await listarDoencasPeloSintoma(sintomas);
+
+//         // Cálculo para encontrar o índice das doenças na página atual
+//         const start = (page - 1) * perPage;
+//         const end = page * perPage;
+//         const paginatedDoencas = doencas.slice(start, end);
+
+
+//         res.render('listadoencasPeloSintoma', {
+//             doencas: paginatedDoencas,
+//             currentPage: page,
+//             totalPages: Math.ceil(doencas.length / perPage)
+//         });
+//     } catch (err) {
+//         // Renderize a página de erro com a mensagem de erro
+//         res.status(500).render('erro', { mensagem: "Erro ao listar doencas:" + err.message });
+//     }
+// });
+
 app.get('/searchnpop', (req, res) => {
     res.render('searchnpop');
 });
@@ -254,6 +373,10 @@ app.get('/searchcid', (req, res) => {
 
 app.get('/searchpatg', (req, res) => {
     res.render('searchpatg');
+});
+
+app.get('/searchsimptoms', (req, res) => {
+    res.render('searchsimptoms');
 });
 
 // Inicia o servidor

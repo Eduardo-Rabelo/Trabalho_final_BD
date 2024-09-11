@@ -2,10 +2,10 @@ const mariadb = require('mariadb');
 
 // Cria o pool de conexões
 const pool = mariadb.createPool({
-    host: '120-- etc host do pc',
+    host: 'localhost',
     port: '3306',
     user: 'root',
-    password: 'senha do heidisql',
+    password: 'q12345q',
     database: 'goiaba',
     connectionLimit: 5
 });

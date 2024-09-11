@@ -187,6 +187,70 @@ GROUP BY
     return result;
 }
 
+
+async function listarDoencasPeloSintoma(sintomas) {
+    // Certifique-se de que sintomas é um array
+    if (!Array.isArray(sintomas)) {
+        throw new Error("sintomas deve ser um array.");
+    }
+    sintomasSQL = "\'" + sintomas + "\'" 
+    console.log("última vez sintomas: ", sintomas)
+    console.log("Tipo sintomas: ", typeof(sintomas))
+    // Construa a string de placeholders para os sintomas
+    const sintomasList = sintomas[0].split(',');
+    for (let i = 0; i < sintomasList.length; i++) {
+        sintomasList[i] = `'${sintomasList[i]}'`;
+    }
+    console.log("List sintomas: ", sintomasList)
+
+    // Consulta SQL ajustada usando placeholders
+    const sql = `
+        SELECT 
+            d.cid AS id,
+            d.nome_tecnico AS nome,
+            SUM(
+                CASE 
+                    WHEN sd.nome_sintoma IS NOT NULL THEN
+                        CASE sd.ocorrencia
+                            WHEN 'muito comum' THEN 5
+                            WHEN 'comum' THEN 4
+                            WHEN 'pouco comum' THEN 3
+                            WHEN 'raro' THEN 2
+                            WHEN 'muito raro' THEN 1
+                            ELSE 0
+                        END
+                    ELSE 0
+                END
+            ) - 
+            (
+                LENGTH(${sintomasSQL}) - LENGTH(REPLACE(${sintomasSQL}, ',', '')) + 1 
+                - COUNT(sd.nome_sintoma)
+            ) AS pontuacao
+        FROM 
+            doenca AS d
+        LEFT JOIN 
+            sintoma_doenca AS sd ON d.cid = sd.cid_doenca AND sd.nome_sintoma IN (${sintomasList})
+        GROUP BY 
+            d.cid
+        ORDER BY 
+            pontuacao DESC;
+    `;
+
+    // Crie a lista de parâmetros para a consulta
+    const parametros = [sintomasSQL,sintomasSQL,sintomasList];
+
+    console.log("SQL:", sql);
+    console.log("Parâmetros:", parametros);
+
+    // Execute a consulta usando o banco de dados
+    const doencas = await database.query(sql);
+    // console.log(doencas)y
+    return doencas;
+}
+
+    
+
+
 module.exports = { 
     cadastrarPatogeno, 
     cadastrarDoenca,
@@ -197,6 +261,7 @@ module.exports = {
     pesquisanTech,
     pesquisaCid,
     pesquisanPop,
-    pesquisaPatg };
+    pesquisaPatg,
+    listarDoencasPeloSintoma };
 
     

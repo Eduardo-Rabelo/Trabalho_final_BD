@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!-- <html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PesquisaNtech</title>
+    <link rel="stylesheet" href="/style.css">
+    <script>
+        function validarFormulario(event) {
+            const sintoma = document.getElementById('sintoma').value.trim();
+
+            if (!sintoma) {
+                event.preventDefault(); // Impede o envio do formulário
+                alert('Preencha o valor para pesquisar.');
+            }
+        }
+
+        function ajustarAcaoFormulario() {
+            const sintoma = document.getElementById('sintoma').value.trim();
+            const form = document.getElementById('pesquisaForm');
+
+            // Atualize o atributo action do formulário
+            if (sintoma) {
+                console.log("Sintoma: ",sintoma)
+                form.action = `/pesquisaSintoma/${encodeURIComponent(sintoma)}`;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <a href="/index" class="voltar">← Voltar</a>
+        <h1>Digite o sintoma</h1>
+
+        <form id="pesquisaForm" method="GET" onsubmit="validarFormulario(event); ajustarAcaoFormulario()">
+            <input type="text" id="sintoma" name="sintoma" required>
+            <button type="submit">Pesquisar</button>
+        </form>
+    </div>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Sintoma</title>
+    <link rel="stylesheet" href="/style.css">
+    <script>
+        const MAX_CAMPOS = 3;
+        
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Função para adicionar um novo campo de sintoma
+        function adicionarCampo() {
+            const container = document.getElementById('sintomas-container');
+            const campos = container.getElementsByClassName('sintoma');
+            
+            if (campos.length < MAX_CAMPOS) {
+                const div = document.createElement('div');
+                div.className = 'sintoma'; // Adiciona uma classe para facilitar a remoção
+
+                // Cria o campo de texto para o sintoma
+                const inputSintoma = document.createElement('input');
+                inputSintoma.type = 'text';
+                inputSintoma.name = 'nomeSintoma[]'; // Define o nome como um array
+                inputSintoma.placeholder = 'Nome Sintoma';
+
+                // Adiciona os campos criados ao container
+                div.appendChild(inputSintoma);
+                container.appendChild(div);
+            } else {
+                alert(`Você pode adicionar no máximo ${MAX_CAMPOS} sintomas.`);
+            }
+        }
+
+        // Função para remover o último campo de sintoma
+        function removerUltimoCampo() {
+            const container = document.getElementById('sintomas-container');
+            const campos = container.getElementsByClassName('sintoma');
+            
+            if (campos.length > 1) { // Garantir que sempre há pelo menos um campo
+                container.removeChild(container.lastChild);
+            }
+        }
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+function validarFormulario(event) {
+            const nomeSintomas = document.getElementsByName('nomeSintoma[]');
+            let todosPreenchidos = true;
+
+            // Verifica se todos os campos visíveis foram preenchidos
+            for (let i = 0; i < nomeSintomas.length; i++) {
+                if (nomeSintomas[i].value.trim() === '') {
+                    todosPreenchidos = false;
+                    break;
+                }
+            }
+
+            // Se algum campo visível não foi preenchido, impede o envio do formulário
+            if (!todosPreenchidos) {
+                event.preventDefault();
+                alert('Por favor, preencha todos os campos de sintomas que foram adicionados.');
+            }
+        }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        function ajustarAcaoFormulario() {
+            const nomeSintomas = document.getElementsByName('nomeSintoma[]');
+            let sintomas = [];
+
+            // Coleta os valores dos campos de sintoma
+            for (let i = 0; i < nomeSintomas.length; i++) {
+                const valor = nomeSintomas[i].value.trim();
+                if (valor) {
+                    sintomas.push(valor);
+                }
+            }
+            console.log(sintomas)
+            // Atualiza o atributo action do formulário
+            const form = document.getElementById('pesquisaForm');
+            if (sintomas.length > 0) {
+                form.action = `/pesquisaSintoma/${encodeURIComponent(sintomas)}`;
+            }
+        }
+        
+    </script>
+</head>
+<body>
+    <div class="container">
+
+
+        <form id="pesquisaForm" method="GET" onsubmit="validarFormulario(event); ajustarAcaoFormulario()">
+        
+            <div id="sintomas-container">
+                <div class="sintoma"> <!-- Container para o primeiro campo -->
+                    <label for="nomeSintoma">Nome Sintoma</label>
+                    <input type="text" id="nomeSintoma" name="nomeSintoma[]" placeholder="Nome Sintoma">
+                </div>
+            </div>
+            <button type="button" onclick="adicionarCampo()">Adicionar mais um sintoma</button>
+            <button type="button" onclick="removerUltimoCampo()">Remover último sintoma</button>
+            <button type="submit">Pesquisar</button>
+        </form>
+    </div>
+</body>
+</html>
