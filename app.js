@@ -232,10 +232,11 @@ app.post('/pesquisapatg', async (req, res) => {
 //     }
 // });
 
-app.get('/pesquisaSintoma/:sintoma', async (req, res) => {
+app.post('/pesquisaSintoma', async (req, res) => {
     try {
         // Pegue o valor dos sintomas do corpo da requisição ou query string
-        let sintomas = req.params.sintoma
+        console.log("req.body: ",req.body)
+        let sintomas = req.body.nomeSintoma;
         console.log("Sintomas: ",sintomas)
         // Converte sintomas para array se for uma string
         if (typeof sintomas === 'string') {

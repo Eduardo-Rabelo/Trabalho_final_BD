@@ -127,7 +127,7 @@ function validarFormulario(event) {
             // Atualiza o atributo action do formulário
             const form = document.getElementById('pesquisaForm');
             if (sintomas.length > 0) {
-                form.action = `/pesquisaSintoma/${encodeURIComponent(sintomas)}`;
+                form.action = `/pesquisaSintoma`;
             }
         }
         
@@ -137,7 +137,7 @@ function validarFormulario(event) {
     <div class="container">
 
 
-        <form id="pesquisaForm" method="GET" onsubmit="validarFormulario(event); ajustarAcaoFormulario()">
+        <form id="pesquisaForm" method="POST" onsubmit="validarFormulario(event);ajustarAcaoFormulario()">
         
             <div id="sintomas-container">
                 <div class="sintoma"> <!-- Container para o primeiro campo -->
